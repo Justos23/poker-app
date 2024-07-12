@@ -149,6 +149,13 @@ class Table():
         return
 
 
+    def distribute_gains(self):
+        share = len(self.winners)
+        for winner in self.winners:
+            winner.stack += self.pot/share
+        return
+
+
     def reset_bet(self):
         self.bet = 0
         return
@@ -158,7 +165,7 @@ class Table():
         self.reset_deck()
         self.reset_players()
         self.change_button()
-
+        self.reset_players()
 
     def reset_deck(self):
         self.deck = self.init_deck
@@ -167,6 +174,12 @@ class Table():
 
     def reset_players(self):
         self.running_players = self.allplayers
+        return 
+    
+    def reset_players(self):
+        self.winners = []
+        for player in self.allplayers:
+            self.allplayers[player].reset()
         return 
 
 
