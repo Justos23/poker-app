@@ -6,7 +6,6 @@ class Player():
 
     def __init__(self, id, buy_in, players):
         self.id = id,
-        self.players = players
         self.stack = buy_in
         self.is_fold = False
         self.hand = []
@@ -192,3 +191,11 @@ class Player():
             self.statement = f"{self.name} has a high of {list(self.digit_dict.keys())[list(self.digit_dict.values()).index(sorted(d, reverse=True)[0])]}"
             self.score = result
             return
+
+
+    def reset(self):
+        self.is_fold = False
+        self.hand = []
+        self.statement = ''
+        self.score = 0
+        return

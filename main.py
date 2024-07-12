@@ -43,36 +43,42 @@ def main():
         no_winner = True
         while no_winner:
             table.play_round()
-            if len(table.running_player) == 1:
+            if len(table.running_players) == 1:
                 break
 
             drawn_cards = table.draw(3)
             print(f"{drawn_cards} at the flop")
-            #table.play_round()
-            if len(table.running_player) == 1:
+            table.play_round()
+            if len(table.running_players) == 1:
                 break
 
-            drawn_cards, current_deck = table.draw(1, current_deck)
+            drawn_cards = table.draw(1)
             print(f"{drawn_cards} at the turn")
+            print(f"Cards in the middle : {table.cards_in_the_middle}")
             table.play_round()
-            if len(table.running_player) == 1:
+            if len(table.running_players) == 1:
                 break
 
-            drawn_cards, current_deck = table.draw(1, current_deck)
+            drawn_cards = table.draw(1)
             print(f"{drawn_cards} at the river")
+            print(f"Cards in the middle : {table.cards_in_the_middle}")
             table.play_round()
-            if len(table.running_player) == 1:
+            if len(table.running_players) == 1:
                 break
-            
-        print(f"Cards in the middle : {table.cards_in_the_middle}")
-        for player in table.running_players:
-            players[player].hand.extend(table.cards_in_the_middle)
-            print(f"Player {players[player].name} has {players[player].hand} in hand")
-            players[player].get_result()
-            print(players[player].statement)
-            print(players[player].score)
+            no_winner = True
 
-        table.get_winner()
+        if len(table.running_players) > 1:
+            for player in table.running_players:
+                players[player].hand.extend(table.cards_in_the_middle)
+                print(f"Player {players[player].name} has {players[player].hand} in hand")
+                players[player].get_result()
+                print(players[player].statement)
+                print(players[player].score)
+
+            table.get_winner()
+        else:
+            for player in table.running_players:
+                table.winners = [table.running_players[player]]
 
         share = len(table.winners)
 
@@ -85,54 +91,12 @@ def main():
         else:
             print(f"{winner} wins and gets ${table.pot}")
 
-        current_deck = table.reset_deck()
+        table.distribute_gains()
+
+        current_deck = table.reset()
 
         play = False
     
-
-    
-
-    #Player_3 = ['KingS', '5C', 'KingC', '6H', 'JackD']
-    #Player_4 = ['JackS', '5C', 'KingC', '2H', 'JackD']
-    #Player_5 = ['QueenS', '5C', 'KingC', '2H', 'QueenD']
-    #Player_1 = ['9S', 'QueenS', 'KingS', '10S', 'JackS']
-    #Player_2 = ['9S', '10S', '8S', 'QueenS', 'JackS']
-
-    results = []
-    hands = []
-    prt = []
-    p1_result = outcome(Player_1)
-    results.append(p1_result[0])
-    hands.append(p1_result[1])
-    prt.append(p1_result[2])
-    p2_result = outcome(Player_2)
-    results.append(p2_result[0])
-    hands.append(p2_result[1])
-    prt.append(p2_result[2])
-    p3_result = outcome(Player_3)
-    results.append(p3_result[0])
-    hands.append(p3_result[1])
-    prt.append(p3_result[2])
-    p4_result = outcome(Player_4)
-    results.append(p4_result[0])
-    hands.append(p4_result[1])
-    prt.append(p4_result[2])
-    p5_result = outcome(Player_5)
-    results.append(p5_result[0])
-    hands.append(p5_result[1])
-    prt.append(p5_result[2])
-
-    print('Player 1 : {} --> {} \nPlayer 2 : {} --> {} \nPlayer 3 : {} --> {}\nPlayer 4 : {} --> {} \nPlayer 5 : {} --> {}'.format(p1_result[1], p1_result[2], p2_result[1], p2_result[2], p3_result[1], p3_result[2], p4_result[1], p4_result[2], p5_result[1], p5_result[2]))
-
-    win = get_winner(results, hands)
-    if len(win) > 1:
-        draw = 'Draw :'
-        for p in range(len(win)):
-            draw += (' Player {},'.format(win[p]+1))
-        draw += (' with {} '.format(prt[win[0]]))
-        print(draw)
-    else:
-        print('Player {} wins! {}'.format(win[0]+1, prt[win[0]]))
 
 if __name__ == '__main__':
     print('The game is about to start')
