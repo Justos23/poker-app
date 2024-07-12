@@ -5,6 +5,7 @@ import os
 from classes.players import Player
 from classes.table import Table
 import uuid
+import time
 
 
 def main():
@@ -22,7 +23,7 @@ def main():
 
         name_already_exists = True
         while name_already_exists:
-            new_player = Player(new_id, 5000, names)
+            new_player = Player(new_id, 5000)
             if new_player.name not in names:
                 names.append(new_player.name)
                 players[new_id] = new_player
@@ -30,8 +31,7 @@ def main():
                 name_already_exists = False
 
     table = Table(players)
-    play = True
-    while play == True:
+    while len(table.allplayers) > 1:
         current_deck = table.deck
         for draw in range(2):
             for player in players:
@@ -39,28 +39,31 @@ def main():
                 players[player].hand.append(current_deck[draw])
                 current_deck.pop(draw)
                 print(f"Player {players[player].name} has {players[player].hand} in hand")
-
+        #time.sleep(10)
         no_winner = True
         while no_winner:
             table.play_round()
             if len(table.running_players) == 1:
                 break
-
+            #time.sleep(3)
             drawn_cards = table.draw(3)
             print(f"{drawn_cards} at the flop")
+            #time.sleep(3)
             table.play_round()
             if len(table.running_players) == 1:
                 break
-
+            #time.sleep(3)
             drawn_cards = table.draw(1)
             print(f"{drawn_cards} at the turn")
+            #time.sleep(3)
             print(f"Cards in the middle : {table.cards_in_the_middle}")
             table.play_round()
             if len(table.running_players) == 1:
                 break
-
+            #time.sleep(3)
             drawn_cards = table.draw(1)
             print(f"{drawn_cards} at the river")
+            #time.sleep(3)
             print(f"Cards in the middle : {table.cards_in_the_middle}")
             table.play_round()
             if len(table.running_players) == 1:
@@ -95,8 +98,10 @@ def main():
 
         current_deck = table.reset()
 
-        play = False
-    
+    for player in table.running_players:
+            overall_winner = table.allplayers[player]
+    print(f"{overall_winner.name} wins it all")
+
 
 if __name__ == '__main__':
     print('The game is about to start')

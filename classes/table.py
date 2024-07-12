@@ -1,4 +1,4 @@
-import random
+import random, time
 from numpy.random import choice
 
 class Table():
@@ -91,6 +91,7 @@ class Table():
             action = self.call(player)
         elif action == 'raise':
             action = self.raise_bet(player)
+        #time.sleep(3)
         return action
 
 
@@ -119,11 +120,11 @@ class Table():
                     actions[to_play%len(self.allplayers)] = -1
                     to_play += 1
                     continue
-                print(f"{self.allplayers[player].name} to play")
                 action = self.take_action(self.allplayers[player])
                 actions[to_play%len(self.allplayers)] = action
                 if action == -1:
                     if len(self.running_players) == 1:
+                        self.reset_bet()
                         return 
                 else:
                     self.pot += action
@@ -163,26 +164,43 @@ class Table():
 
     def reset(self):
         self.reset_deck()
-        self.reset_players()
         self.change_button()
         self.reset_players()
+        self.reset_pot()
+
 
     def reset_deck(self):
-        self.deck = self.init_deck
-        return 
-
-
-    def reset_players(self):
-        self.running_players = self.allplayers
+        self.deck = self.init_deck.copy()
+        self.cards_in_the_middle = []
         return 
     
+
     def reset_players(self):
         self.winners = []
+        self.check_busted()
         for player in self.allplayers:
             self.allplayers[player].reset()
+        self.running_players = self.allplayers.copy()
         return 
 
 
     def change_button(self):
         self.button = (self.button+1)%len(self.allplayers)
+        return
+    
+
+    def reset_pot(self):
+        self.pot = 0
+        return
+    
+    def check_busted(self):
+        players_to_remove = []
+        for player in self.allplayers:
+            if self.allplayers[player].stack <= 0:
+                loser = self.allplayers[player].name
+                players_to_remove.append(self.allplayers[player].id[0])
+                print(f"{loser} is eliminated!")
+        for player in players_to_remove:
+            del self.allplayers[player]
+        self.allplayerslist = list(self.allplayers.keys())
         return

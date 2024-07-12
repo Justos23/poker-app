@@ -4,7 +4,7 @@ from collections import Counter
 
 class Player():
 
-    def __init__(self, id, buy_in, players):
+    def __init__(self, id, buy_in):
         self.id = id,
         self.stack = buy_in
         self.is_fold = False
