@@ -4,14 +4,16 @@ from collections import Counter
 
 class Player():
 
-    def __init__(self, id, buy_in, players):
+    def __init__(self, id, buy_in, name = False):
         self.id = id,
         self.stack = buy_in
         self.is_fold = False
         self.hand = []
-        self.name = self.generate_random_name()
+        self.name = name if name != False else self.generate_random_name()
+        self.is_real_player = True if name else False
         self.statement = ""
         self.score = 0
+        self.current_bet = 0
         self.digit_dict = {'2' : 2, '3' : 3, '4' : 4, '5' : 5, '6' : 6, '7' : 7, '8' : 8, '9' : 9, '10' : 10, 'Jack' : 11, 'Queen' : 12, 'King' : 13, 'Ace' : 14}
 
     def generate_random_name(self):
