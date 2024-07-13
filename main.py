@@ -29,7 +29,7 @@ def main():
                 players[new_id] = new_player
                 print(f'A new player has joined: {new_player.name}')
                 name_already_exists = False
-
+    
     id_already_exists = True
     while id_already_exists:
         new_id = uuid.uuid4()
@@ -78,7 +78,7 @@ def main():
             table.play_round()
             if len(table.running_players) == 1:
                 break
-            no_winner = True
+            no_winner = False
 
         if len(table.running_players) > 1:
             for player in table.running_players:
