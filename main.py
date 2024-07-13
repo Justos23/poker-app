@@ -30,6 +30,15 @@ def main():
                 print(f'A new player has joined: {new_player.name}')
                 name_already_exists = False
 
+    id_already_exists = True
+    while id_already_exists:
+        new_id = uuid.uuid4()
+        if new_id not in ids:
+            ids.append(new_id)
+            id_already_exists = False
+    me = Player(new_id, 5000, "Justos")
+    players[new_id] = me
+
     table = Table(players)
     while len(table.allplayers) > 1:
         current_deck = table.deck
@@ -38,7 +47,8 @@ def main():
                 draw = random.randrange(len(current_deck))
                 players[player].hand.append(current_deck[draw])
                 current_deck.pop(draw)
-                print(f"Player {players[player].name} has {players[player].hand} in hand")
+                if players[player].is_real_player:
+                    print(f"Player {players[player].name} has {players[player].hand} in hand")
         #time.sleep(10)
         no_winner = True
         while no_winner:

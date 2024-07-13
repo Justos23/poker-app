@@ -35,18 +35,19 @@ class Table():
 
     def has_sufficient_funds(self, player, action):
         if action == 'call':
-            return player.stack >= self.bet
+            return (player.stack + player.current_bet) >= self.bet
         elif action == 'raise':
-            return player.stack > self.bet
+            return (player.stack + player.current_bet) > self.bet
 
 
     def call(self, player):
+        #if the player has already placed money on the table he only should place the difference to call a raise.
         if self.has_sufficient_funds(player, 'call'):
-            player.stack -= self.bet
+            player.stack -= (self.bet + player.current_bet)
             spent = self.bet
             print(f"{player.name} is calling")
         else:
-            spent = player.stack
+            spent = (player.stack + player.current_bet)
             player.stack = 0
             print(f"{player.name} is all-in!")
         return spent
@@ -56,11 +57,11 @@ class Table():
             if self.bet == 0:
                 spent = self.bb * 2
             else:
-                spent = self.bet * 2
-            player.stack -= spent
+                spent = self.bet * 2 
+            player.stack -= (spent + player.current_bet)
             print(f"{player.name} is raising: ${spent}")
         else:
-            spent = player.stack
+            spent = (player.stack + player.current_bet)
             player.stack = 0
             print(f"{player.name} puts ${spent} on the table and is all-in!")
         self.bet = spent
@@ -91,9 +92,34 @@ class Table():
             action = self.call(player)
         elif action == 'raise':
             action = self.raise_bet(player)
-        #time.sleep(3)
         return action
 
+
+    def check_authorized_action(self, player, action):
+        print(f"Your current stack is {player.stack}")
+        return any([action in ("-1", "0"), (int(action) >= self.bet and (player.stack + player.current_bet) >= int(action))])
+
+
+    def real_player_take_action(self, player):
+        authorized = False
+        while not authorized:
+            if self.bet == 0:
+                action = input("Your turn to play: (Enter -1 to fold, 0 to check, or any amount to raise)")
+            else:
+                action = input(f"Your turn to play: {self.bet} to call (Enter -1 to fold, {self.bet} to call or any amount to raise)")
+            authorized = self.check_authorized_action(player, action)
+        if action == -1:
+            print(f"{player.name} has fold")
+            action = self.do_fold(player)
+        elif action == 0:
+            print(f"{player.name} checks")
+            action = 0
+        else:
+            self.bet = int(action)
+            amount_to_put = self.bet - player.current_bet
+            player.stack -= amount_to_put
+            print(f"{player.name} puts ${action} on the table")
+        return int(action)
 
     def check_all_good(self, actions):
         bets = [x for x in actions if x != -1] 
@@ -120,7 +146,11 @@ class Table():
                     actions[to_play%len(self.allplayers)] = -1
                     to_play += 1
                     continue
-                action = self.take_action(self.allplayers[player])
+                if self.allplayers[player].is_real_player:
+                    action = self.real_player_take_action(self.allplayers[player])
+                else:
+                    action = self.take_action(self.allplayers[player])
+                time.sleep(2)
                 actions[to_play%len(self.allplayers)] = action
                 if action == -1:
                     if len(self.running_players) == 1:
@@ -159,6 +189,8 @@ class Table():
 
     def reset_bet(self):
         self.bet = 0
+        for player in self.allplayers:
+            self.allplayers[player].current_bet = 0
         return
 
 
